@@ -1,16 +1,58 @@
-
-#' rMHN(n=10000,alpha=32,beta=20,gamma=-3)
+#' @name {Modified-Half-Normal}
+#' @title The Modified-Half-Normal Distribution
 #'
+#' @description The random number generation for Modified-Half-Normal distribution function
+#' with parameters \code{alpha}, \code{beta}, and \code{gamma}.
+#'
+#'@param n number of samples to be generated. If \code{length(n) > 1}, the length is taken to
+#'be the number required.
+#'@param alpha  alpha > 0 must be numeric.
+#'@param beta   beta > 0 must be numeric.
+#'@param gamma  gamma is a real number.
+#'
+#'
+#'
+#'@details  The Modified-Half-Normal distribution with parameters \eqn{\alpha} , \eqn{\beta}
+#'and \eqn{\gamma}  has density given by
+#'\deqn{f_{MHN}(x|\alpha,\beta,\gamma) =\frac{2\beta^{\frac{\alpha}{2}}x^{\alpha-1}\exp(-\beta x^2+\gamma x)}{{}_1\Psi_1\begin{bmatrix} \left(\frac{\alpha}{2},\frac{1}{2}\right) ; \frac{\gamma}{\sqrt{\beta}}\\ (1,0) \end{bmatrix}}\mathbb{I}(x>0),}
+#'for \eqn{\alpha > 0, \beta > 0, \gamma \in \mathbb{R}}.
+#'Where  \eqn{\mathbb{I}(x > 0)} denotes the indicator function and \eqn{{}_1\Psi_1\begin{bmatrix} \left(\frac{\alpha}{2},\frac{1}{2}\right) ; z \\ (1,0) \end{bmatrix}}
+#'is a specific case of Fox-Wright Psi function (Fox 1928; Wright 1935).
+#'@return \code{rMHN} generates random deviates.
+#'Invalid arguments will result in error.
+#'The length of the result is determined by \code{n}.
+#'@references Jingchao Sun, Maiying Kong & Subhadip Pal (2021): The Modified-Half-Normal
+#'distribution: Properties and an efficient sampling scheme, Communications in Statistics - Theory
+#'and Methods.
 #' @examples
-#' ss=rMHN(n=10000,alpha=32,beta=20,gamma=-3)
+#' ss=rMHN(n=10000,alpha=32,beta=20,gamma=-2)
 #' ss=rMHN(n=1000, alpha=3, beta=1, gamma=1)
 #' ss=rMHN(n=1000, alpha=3, beta=1, gamma=-1)
 #' hist(ss$sample,prob=TRUE, col="grey")
 #' lines(density(ss$sample))
 #' @export
-rMHN<-function(n=1,alpha,beta,gamma){
+rMHN<-function(n,alpha,beta,gamma){
 
  # browser()
+  if (!is.numeric(n) || !is.numeric(alpha) || !is.numeric(beta) || !is.numeric(gamma)){
+    stop('All the inputs must be numeric')
+  }
+  if(any(is.na(n)) || is.na(alpha) || is.na(beta) || is.na(gamma)){
+    stop('The inputs can not be NaN')
+  }
+  if (any(n <= 0)){
+    stop('The value of n must be greater than 0')
+  }
+
+  if(alpha <= 0){
+    stop('alpha must be greater than 0')
+  }
+  if(beta <= 0){
+    stop('beta must be greater than 0')
+  }
+  if (length(n) > 1){
+    n = length(n)
+  }
   if(gamma<=0){
     #sample=replicate(N,rMHN_negative_b(alpha=alpha,beta=beta,gamma=(gamma)))
     sample=rMHN_negative_b(n = n,  alpha=alpha,beta=beta,gamma=gamma)
@@ -38,7 +80,6 @@ rMHN<-function(n=1,alpha,beta,gamma){
 
   if( alpha<=1){
     sample=replicate(n,rExtendedGamma(alpha,a=beta,b=(gamma)))
-
   }
   }
   x=sample
